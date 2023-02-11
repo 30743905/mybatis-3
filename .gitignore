@@ -8,7 +8,7 @@
 /.settings
 /nb*
 /release.properties
-/target
+/target/
 
 # These are needed if running in IDE without properties set
 /ibderby
@@ -16,3 +16,5 @@ derby.log
 /bin/
 .mvn/wrapper/maven-wrapper.jar
 .sts4-cache/
+/mybatis-demo/target/
+/mybatis-3/target/
