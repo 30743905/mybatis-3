@@ -1,4 +1,4 @@
-package com.linkedbear.mybatis.entity;
+package com.mybatis.entity;
 
 import lombok.Data;
 
@@ -7,5 +7,4 @@ public class Department {
   private String id;
   private String name;
   private String tel;
-
 }

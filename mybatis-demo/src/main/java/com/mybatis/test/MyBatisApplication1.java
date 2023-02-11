@@ -1,6 +1,6 @@
-package com.linkedbear.mybatis.app;
+package com.mybatis.test;
 
-import com.linkedbear.mybatis.entity.Department;
+import com.mybatis.entity.Department;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
