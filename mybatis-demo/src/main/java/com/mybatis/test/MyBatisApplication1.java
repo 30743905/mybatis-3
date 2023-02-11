@@ -1,6 +1,7 @@
 package com.mybatis.test;
 
 import com.mybatis.entity.Department;
+import com.mybatis.mapper.DepartmentMapper;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -15,7 +16,12 @@ public class MyBatisApplication1 {
     InputStream xml = Resources.getResourceAsStream("mybatis-config.xml");
     SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(xml);
     SqlSession sqlSession = sqlSessionFactory.openSession();
-    List<Department> departmentList = sqlSession.selectList("departmentMapper.findAll");
+    List<Department> departmentList = sqlSession.selectList("com.mybatis.mapper.DepartmentMapper.findAll");
     departmentList.forEach(System.out::println);
+    System.out.println("=================>>");
+    DepartmentMapper departmentMapper = sqlSession.getMapper(DepartmentMapper.class);
+    List<Department> departmentList2 = departmentMapper.findAll();
+    departmentList2.forEach(System.out::println);
+
   }
 }
