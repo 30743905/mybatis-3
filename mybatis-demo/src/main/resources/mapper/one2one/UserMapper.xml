@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mybatis.test.one2one.mapper.UserMapper">
+
+  <resultMap id="userMap" type="com.mybatis.test.one2one.entity.User">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <result property="age" column="age"/>
+    <result property="birthday" column="birthday"/>
+  </resultMap>
+
+  <resultMap id="userWithDepartmentMap" extends="userMap" type="com.mybatis.test.one2one.entity.User">
+    <association property="department" javaType="com.mybatis.test.one2one.entity.Department" columnPrefix="department_">
+      <!-- column配置数据库查询列名称，这里的 数据库列名称=column+columnPrefix -->
+      <id property="id" column="id"/>
+      <result property="name" column="name"/>
+    </association>
+  </resultMap>
+
+  <resultMap id="userWithDepartmentMap2" extends="userMap" type="com.mybatis.test.one2one.entity.User">
+    <association property="department" fetchType="lazy"  column="department_id" select="com.mybatis.test.one2one.mapper.DepartmentMapper.queryById" />
+  </resultMap>
+
+
+  <select id="findAll" resultMap="userWithDepartmentMap">
+    select usr.*, dep.name as department_name
+    from tbl_user usr
+           left join tbl_department dep on usr.department_id = dep.id
+  </select>
+
+  <select id="findAll2" resultMap="userWithDepartmentMap2">
+    select
+      *
+    from tbl_user
+  </select>
+
+
+</mapper>

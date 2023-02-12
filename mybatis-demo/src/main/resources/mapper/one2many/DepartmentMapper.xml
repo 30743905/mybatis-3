@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mybatis.test.one2many.mapper.DepartmentMapper">
+
+  <resultMap id="departmentMap" type="com.mybatis.test.one2many.entity.Department">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <result property="tel" column="tel"/>
+  </resultMap>
+
+  <resultMap id="departmentWithUserMap1" extends="departmentMap" type="com.mybatis.test.one2many.entity.Department">
+    <collection property="users" ofType="com.mybatis.test.one2many.entity.User" columnPrefix="user_">
+      <id property="id" column="id"/>
+      <result property="name" column="name"/>
+      <result property="age" column="age"/>
+      <result property="birthday" column="birthday"/>
+    </collection>
+  </resultMap>
+
+  <resultMap id="departmentWithUserMap2" type="com.mybatis.test.one2many.entity.Department">
+    <collection property="users" ofType="com.mybatis.test.one2many.entity.User"
+                    select="com.mybatis.test.one2many.mapper.UserMapper.findAllByDepartmentId" column="id" fetchType="lazy"/>
+  </resultMap>
+
+  <select id="findAll" resultMap="departmentWithUserMap1">
+    select dep.*,user.name user_name, user.age user_age, user.birthday user_birthday from tbl_department dep left join tbl_user user on (dep.id = user.department_id);
+  </select>
+
+
+
+  <select id="findAll2" resultMap="departmentWithUserMap2">
+    select * from tbl_department
+  </select>
+
+
+
+  <select id="queryById" parameterType="string" resultType="com.mybatis.test.one2many.entity.Department">
+    select * from tbl_department where id = #{id}
+  </select>
+
+</mapper>
