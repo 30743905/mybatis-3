@@ -5,7 +5,7 @@
 <configuration>
 
   <settings>
-    <setting name="logImpl" value="LOG4J"/>
+    <setting name="logImpl" value="SLF4J"/>
   </settings>
 
   <environments default="development">
@@ -21,7 +21,13 @@
   </environments>
 
   <mappers>
-    <mapper resource="mapper/DepartmentMapper.xml"/>
+    <mapper resource="mapper/basic/DepartmentMapper.xml"/>
+    <mapper resource="mapper/one2one/DepartmentMapper.xml/"/>
+    <mapper resource="mapper/one2one/UserMapper.xml/"/>
+    <mapper resource="mapper/one2many/DepartmentMapper.xml/"/>
+    <mapper resource="mapper/one2many/UserMapper.xml/"/>
+    <mapper resource="mapper/cache/DepartmentMapper.xml/"/>
+    <mapper resource="mapper/cache/UserMapper.xml/"/>
   </mappers>
 
 </configuration>

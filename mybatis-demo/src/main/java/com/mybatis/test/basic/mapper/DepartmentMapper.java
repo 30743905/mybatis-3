@@ -1,6 +1,6 @@
-package com.mybatis.mapper;
+package com.mybatis.test.basic.mapper;
 
-import com.mybatis.entity.Department;
+import com.mybatis.test.basic.entity.Department;
 
 import java.util.List;
 

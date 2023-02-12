@@ -41,7 +41,13 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
   private static final Constructor<Lookup> lookupConstructor;
   private static final Method privateLookupInMethod;
   private final SqlSession sqlSession;
+  // 记录当前代理了哪个接口
   private final Class<T> mapperInterface;
+  /**
+   * 缓存MapperMethod：
+   * 注意看这个 Map 的 key ，是 Java 中反射的那个 Method ，这个 MapperProxy 会将 Mapper 接口中的每个方法都缓存一遍，
+   * 回头 Mapper 代理对象执行时，只需要知道当前执行哪个方法，就可以从这个 Map 中取出对应的 Invoker ，调用其方法就 OK
+   */
   private final Map<Method, MapperMethodInvoker> methodCache;
 
   public MapperProxy(SqlSession sqlSession, Class<T> mapperInterface, Map<Method, MapperMethodInvoker> methodCache) {
@@ -79,9 +85,11 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
+      // 如果是Object类中的方法，默认不代理
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, args);
       } else {
+        // Mapper接口自己定义的方法，需要找对应的MapperMethodInvoker
         return cachedInvoker(method).invoke(proxy, method, args, sqlSession);
       }
     } catch (Throwable t) {
@@ -89,17 +97,28 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     }
   }
 
+  /**
+   * 这段源码其实主要就两段逻辑：
+   *  1）如果缓存里有 Invoker ，则直接返回；
+   *  2）如果没有，则根据要执行的方法是否为 default 方法，不是则封装 PlainMethodInvoker ，并放入缓存。这个封装的重点，不是 PlainMethodInvoker ，而是它内部的 MapperMethod 。
+   * @param method
+   * @return
+   * @throws Throwable
+   */
   private MapperMethodInvoker cachedInvoker(Method method) throws Throwable {
     try {
       // A workaround for https://bugs.openjdk.java.net/browse/JDK-8161372
       // It should be removed once the fix is backported to Java 8 or
       // MyBatis drops Java 8 support. See gh-1929
+      // 先取缓存，取到就返回
       MapperMethodInvoker invoker = methodCache.get(method);
       if (invoker != null) {
         return invoker;
       }
 
+      // computeIfAbsent(key, function)：若key对应的value为空，会将第二个参数的返回值存入并返回
       return methodCache.computeIfAbsent(method, m -> {
+        // 兼容Java8特性中接口的default方法
         if (m.isDefault()) {
           try {
             if (privateLookupInMethod == null) {
@@ -112,6 +131,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
             throw new RuntimeException(e);
           }
         } else {
+          // 这里才是执行SqlSession的Invoker
           return new PlainMethodInvoker(new MapperMethod(mapperInterface, method, sqlSession.getConfiguration()));
         }
       });

@@ -1,4 +1,4 @@
-package com.mybatis.entity;
+package com.mybatis.test.cache.entity;
 
 import lombok.Data;
 
